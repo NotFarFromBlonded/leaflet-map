@@ -1,10 +1,11 @@
 import React from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const PieChart = (props) => {
+const DoughnutChart = (props) => {
+    
     var data = {
         labels: props.chartData.map(x => x.material),
         datasets: [{
@@ -27,15 +28,14 @@ const PieChart = (props) => {
           legend: {display: true},
           title: {
             display: true,
-            text: "props.name"
+            text: props.name
           }
         }
       }
     
       return(
-        <div style = {{width: "400px"}} className="m-8 font-semibold">
-            <p className="text-center">{props.name}</p>
-          <Pie 
+        <div style = {{width: "400px"}}>
+          <Doughnut 
             data = {data}
             options = {options}
           />
@@ -46,4 +46,4 @@ const PieChart = (props) => {
       )
 }
 
-export default PieChart
+export default DoughnutChart
