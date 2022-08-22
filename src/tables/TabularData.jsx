@@ -1,53 +1,49 @@
-import React from 'react'
+import React from 'react';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
 
+ChartJS.register(ArcElement, Tooltip, Legend);
 
-const TabularData = (props) => {
-
-  return (
-    <div className="overflow-x-auto relative max-w-5xl mx-auto my-8">
-        <div className="font-mono text-lg font-semibold">
-            <p>{props.name}</p>
+const DoughnutChart = (props) => {
+    
+    var data = {
+        labels: props.chartData.map(x => x.material),
+        datasets: [{
+          data: props.type === "volume"?props.chartData.map((x) => parseFloat((((x.volume_in_ton*100)/props.chartData.map(x=>x.volume_in_ton).reduce((acc, el)=>acc+=el,0))).toFixed(3))):props.type==="emission"?props.chartData.map((x) => parseFloat((((x.CO2emission*100)/props.chartData.map(x=>x.CO2emission).reduce((acc, el)=>acc+=el,0))).toFixed(3))):props.chartData.map((x)=>parseFloat((((x.cost*100)/props.chartData.map(x=>x.cost).reduce((acc, el)=>acc+=el,0))).toFixed(3))),
+          backgroundColor: [
+            'rgba(8, 61, 119, 1)',
+            'rgba(235, 235, 211, 1)',
+            'rgba(218, 65, 103, 1)',
+            'rgba(244, 211, 94, 1)',
+            'rgba(247, 135, 100, 1)'
+          ],
+          borderColor: "black",
+          borderWidth: 1
+        }]
+      }
+    
+      var options = {
+        responsive: true,
+        plugins: {
+          legend: {display: true},
+          title: {
+            display: true,
+            text: props.name
+          }
+        }
+      }
+    
+      return(
+        <div style = {{width: "400px"}}>
+          <Doughnut 
+            data = {data}
+            options = {options}
+          />
         </div>
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                    {["Material", "Volume (ton)", "CO2 emission (tCO2)", "Cost (Lakhs)"].map((column, idx)=>(
-                        <th scope="col" className={idx === 0?"py-3 px-6":"py-3 px-6 text-center"}>
-                            {column}
-                        </th>
-                    ))}
-                </tr>
-            </thead>
-            <tbody>
-                {props.tableData.map((item, idx)=>(
-                    <tr className="bg-white dark:bg-gray-800">
-                        <th scope="row" className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            {item.material}
-                        </th>
-                        <td className="py-4 px-6 text-right">
-                            {(item.volume_in_ton*props.multiplier).toFixed(3)}
-                        </td>
-                        <td className="py-4 px-6 text-right">
-                            {(item.CO2emission*props.multiplier).toFixed(3)}
-                        </td>
-                        <td className="py-4 px-6 text-right">
-                            {((item.cost*props.multiplier)/100000).toFixed(3)}
-                        </td>
-                        
-                    </tr>
-                ))}
-            </tbody>
-            <tfoot>
-                <tr className="font-semibold text-gray-900 dark:bg-gray-900 dark:text-white">
-                    <th scope="row" className="py-3 px-6 text-base ">Total</th>
-                    <td className="py-3 px-6 text-right">{(props.tableData.map((item)=>item.volume_in_ton).reduce((acc,el)=>acc+=el,0)*props.multiplier).toFixed(3)}</td>
-                    <td className="py-3 px-6 text-right">{(props.tableData.map((item)=>item.CO2emission).reduce((acc,el)=>acc+=el,0)*props.multiplier).toFixed(3)}</td>
-                    <td className="py-3 px-6 text-right">{((props.tableData.map((item)=>item.cost).reduce((acc,el)=>acc+=el,0)*props.multiplier)/100000).toFixed(3)}</td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
-  )
+        /*<>
+          {props.chartData === ""?console.log(""):console.log(props.chartData.map(x=>x.material))}
+        </>*/
+      )
 }
 
-export default TabularData
+export default DoughnutChart
