@@ -160,12 +160,17 @@ function App() {
           {shDistInKm.length===0 ?"":<TabularData tableData={road_material[1].Carbon_emission} multiplier={shDistInKm.reduce((acc,el)=>acc+=el,0)} name="Construction of SH Details:"/>}
           {rrDistInKm.length===0 ?"":<TabularData tableData={road_material[2].Carbon_emission} multiplier={rrDistInKm.reduce((acc,el)=>acc+=el,0)} name="Construction of RR Details:"/>}
       </div>
-      <div className="aqiButton">
-        {nhDistInKm.length === 0?"":<button style={{color:"#fefae0",background:"#606c38",borderRadius:"19px",padding:"8px 29px"}} className="py-2 px-4 text-sm font-medium text-gray-900 hover:bg-gray-900 hover:text-black focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white" onClick={handlePredictSubmit}>
+
+      <div style={{textAlign:"center",paddingTop:"20px"}}>
+        <p style={{fontSize:"35px",fontFamily:"fantasy"}}>Monitor Air Quality Index(AQI)</p>
+        <div className="aqiButton">
+        {nhDistInKm.length === 0?"":<button style={{color:"#fefae0",background:"#606c38",borderRadius:"19px",padding:"8px 29px",marginTop:"25px"}} className="py-2 px-4 text-sm font-medium text-gray-900 hover:bg-gray-900 hover:text-black focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white" onClick={handlePredictSubmit}>
             Find AQI trend 
           </button>}
       </div>
-      <div className="aqiData">
+      </div>
+      
+      <div className="aqiData" style={{display:"flex",justifyContent: "space-around"}}>
       {!submitting && affectedData.length===0 && originalData.length ?"":
                   loading?<div>
                   <ReactCircularLoader 
