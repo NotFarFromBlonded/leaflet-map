@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState} from 'react';
 import { computeArea ,LatLng } from 'spherical-geometry-js';
+import axios from 'axios';
 
 const Emission = createContext();
 
@@ -18,6 +19,10 @@ const Context = ({children}) => {
     const [nhPolyGons, setnhPolyGons] = useState([]);
     const [shPolyGons, setshPolyGons] = useState([]);
     const [rrPolyGons, setrrPolyGons] = useState([]);
+    const [affectedData, setaffectedData] = useState([]);
+    const[originalData, setOriginalData] = useState([]);
+    const[loading, setLoading] = useState(false);
+    const[submitting, setSubmitting] = useState(false);
     
 
     const distance = (lat1, lon1, lat2, lon2) => {
@@ -29,6 +34,7 @@ const Context = ({children}) => {
       
         return 12742 * Math.asin(Math.sqrt(a)); 
     }
+
 
     const handleGeomanData = () =>{
         //var d = 0;
@@ -103,6 +109,39 @@ const Context = ({children}) => {
 
     }
 
+    const handlePredictSubmit = (e) =>{
+        e.preventDefault();
+        setLoading(true)
+        setSubmitting(true)
+        predictData().then((res)=>{
+            setaffectedData(res.Affected.split(",").map((it)=>parseFloat(it)));
+            setOriginalData(res.original.split(",").map((it)=>parseFloat(it)));
+            setLoading(false);
+            setSubmitting(false);
+        })
+        .catch((err)=>{console.log(err)})
+    }
+
+
+    const predictData = async() => {
+        const data = await axios.get(`http://127.0.0.1:5001/predict?city=Delhi&perc=0.2&date=2020-07-01&days=30`,{
+          responseType: "",
+          headers:{
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          },
+          redirect: 'follow'
+        })
+        .then((res)=>{
+          return res;
+        })
+        .catch(error=>console.log(error))
+        return data.data;
+    }
+
+
+
+
     return(
         <Emission.Provider value={{ 
             handleGeomanData, 
@@ -134,7 +173,9 @@ const Context = ({children}) => {
             setshDistInKm, 
             rrDistInKm, 
             setrrDistInKm,
-            
+            handlePredictSubmit,
+            affectedData,
+            originalData
         }}>
             {children}
         </Emission.Provider>

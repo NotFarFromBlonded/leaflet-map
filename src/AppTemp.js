@@ -67,7 +67,7 @@ function App() {
   }, [mapRef])*/
   const location = useGeoLocation();
 
-  const {handleGeomanData, nhDistInKm, shDistInKm, rrDistInKm, nhAreaInM, shAreaInM, rrAreaInM} = EmissionState();
+  const {handleGeomanData, nhDistInKm, shDistInKm, rrDistInKm, nhAreaInM, shAreaInM, rrAreaInM, handlePredictSubmit} = EmissionState();
 
   const showMyLocation = () => {
     if(location.loaded && !location.error){
@@ -194,6 +194,7 @@ function App() {
           {shDistInKm.length===0 ?"":<TabularData tableData={road_material[1].Carbon_emission} multiplier={shDistInKm.reduce((acc,el)=>acc+=el,0)} name="Construction of SH Details:"/>}
           {rrDistInKm.length===0 ?"":<TabularData tableData={road_material[2].Carbon_emission} multiplier={rrDistInKm.reduce((acc,el)=>acc+=el,0)} name="Construction of RR Details:"/>}
       </div> 
+      
       
     </>
      

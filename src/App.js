@@ -12,8 +12,10 @@ import Geoman from './Geoman';
 import { EmissionState } from './Context';
 import { road_material } from './data';
 import PieChart from './charts/PieChart';
+import LineChart from './charts/LineChart';
 import DoughnutChart from './charts/DoughnutChart';
 import TabularData from './tables/TabularData';
+import ReactCircularLoader from 'react-circular-loader';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -67,7 +69,7 @@ function App() {
   }, [mapRef])*/
   const location = useGeoLocation();
 
-  const {handleGeomanData, nhDistInKm, shDistInKm, rrDistInKm, nhAreaInM, shAreaInM, rrAreaInM} = EmissionState();
+  const {handleGeomanData, nhDistInKm, shDistInKm, rrDistInKm, nhAreaInM, shAreaInM, rrAreaInM, affectedData, originalData, handlePredictSubmit, loading, submitting} = EmissionState();
 
   const showMyLocation = () => {
     if(location.loaded && !location.error){
@@ -157,6 +159,24 @@ function App() {
           {nhDistInKm.length===0 ?"":<TabularData tableData={road_material[0].Carbon_emission} multiplier={nhDistInKm.reduce((acc,el)=>acc+=el,0)} name="Construction of NH Details:"/>}
           {shDistInKm.length===0 ?"":<TabularData tableData={road_material[1].Carbon_emission} multiplier={shDistInKm.reduce((acc,el)=>acc+=el,0)} name="Construction of SH Details:"/>}
           {rrDistInKm.length===0 ?"":<TabularData tableData={road_material[2].Carbon_emission} multiplier={rrDistInKm.reduce((acc,el)=>acc+=el,0)} name="Construction of RR Details:"/>}
+      </div>
+      <div className="aqiButton">
+        {nhDistInKm.length === 0?"":<button style={{color:"#fefae0",background:"#606c38",borderRadius:"19px",padding:"8px 29px"}} className="py-2 px-4 text-sm font-medium text-gray-900 hover:bg-gray-900 hover:text-black focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white" onClick={handlePredictSubmit}>
+            Find AQI trend 
+          </button>}
+      </div>
+      <div className="aqiData">
+      {!submitting && affectedData.length===0 && originalData.length ?"":
+                  loading?<div>
+                  <ReactCircularLoader 
+                            primaryColor="#0D47A1" 
+                            secondaryColor="#e8f4f8" 
+                            diameter="100px" 
+                            primaryWidth="3px" 
+                            secondaryWidth="5px"/>
+                </div>
+            :
+                  <LineChart chartAffectedData = {affectedData} chartOriginalData={originalData}/>}
       </div>
     </>
   );
