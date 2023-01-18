@@ -53,7 +53,7 @@ const LineChart = (props) => {
     };
     
   return (
-    <div style = {{width: "1080px"}}>
+    <div style = {{width: "1080px", margin:"auto"}}>
           <Line options={options} data={data}/>;
     </div>
   )

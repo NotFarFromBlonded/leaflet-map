@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { cost_geo } from '../cost_geo'
 
 const TabularData = (props) => {
 
@@ -22,16 +22,16 @@ const TabularData = (props) => {
                 {props.tableData.map((item, idx)=>(
                     <tr className="bg-white dark:bg-gray-800">
                         <th scope="row" className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            {item.material}
+                            {item.name}
                         </th>
                         <td className="py-4 px-6 text-right">
-                            {(item.volume_in_ton*props.multiplier).toFixed(3)}
+                            {(item.volume*props.multiplier).toFixed(3)}
                         </td>
                         <td className="py-4 px-6 text-right">
-                            {(item.CO2emission*props.multiplier).toFixed(3)}
+                            {((cost_geo.find((x)=>x.name===item.name).Carbon_emission)*props.multiplier).toFixed(3)}
                         </td>
                         <td className="py-4 px-6 text-right">
-                            {((item.cost*props.multiplier)/100000).toFixed(3)}
+                            {((item.volume*(cost_geo.find((x)=>x.name===item.name).cost)*props.multiplier)/100000).toFixed(3)}
                         </td>
                         
                     </tr>
@@ -40,9 +40,9 @@ const TabularData = (props) => {
             <tfoot>
                 <tr className="font-semibold text-gray-900 dark:bg-gray-900 dark:text-white">
                     <th scope="row" className="py-3 px-6 text-base ">Total</th>
-                    <td className="py-3 px-6 text-right">{(props.tableData.map((item)=>item.volume_in_ton).reduce((acc,el)=>acc+=el,0)*props.multiplier).toFixed(3)}</td>
-                    <td className="py-3 px-6 text-right">{(props.tableData.map((item)=>item.CO2emission).reduce((acc,el)=>acc+=el,0)*props.multiplier).toFixed(3)}</td>
-                    <td className="py-3 px-6 text-right">{((props.tableData.map((item)=>item.cost).reduce((acc,el)=>acc+=el,0)*props.multiplier)/100000).toFixed(3)}</td>
+                    <td className="py-3 px-6 text-right">{(props.tableData.map((item)=>item.volume).reduce((acc,el)=>acc+=el,0)*props.multiplier).toFixed(3)}</td>
+                    <td className="py-3 px-6 text-right">{(props.tableData.map((item)=>cost_geo.find((x)=>x.name===item.name).Carbon_emission).reduce((acc,el)=>acc+=el,0)*props.multiplier).toFixed(3)}</td>
+                    <td className="py-3 px-6 text-right">{((props.tableData.map((item)=>item.volume*cost_geo.find((x)=>x.name===item.name).cost).reduce((acc,el)=>acc+=el,0)*props.multiplier)/100000).toFixed(3)}</td>
                 </tr>
             </tfoot>
         </table>

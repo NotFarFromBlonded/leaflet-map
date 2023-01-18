@@ -16,6 +16,8 @@ import LineChart from './charts/LineChart';
 import DoughnutChart from './charts/DoughnutChart';
 import TabularData from './tables/TabularData';
 import ReactCircularLoader from 'react-circular-loader';
+import {road_template} from './template';
+import {cost_geo} from './cost_geo';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -69,7 +71,7 @@ function App() {
   }, [mapRef])*/
   const location = useGeoLocation();
 
-  const {handleGeomanData, nhDistInKm, shDistInKm, rrDistInKm, nhAreaInM, shAreaInM, rrAreaInM, affectedData, originalData, handlePredictSubmit, loading, submitting} = EmissionState();
+  const {handleGeomanData, nhDistInKm, shDistInKm, rrDistInKm, nhAreaInM, shAreaInM, rrAreaInM, affectedData, originalData, handlePredictSubmit, loading, submitting, handleRoadChange, roadt} = EmissionState();
 
   const showMyLocation = () => {
     if(location.loaded && !location.error){
@@ -128,6 +130,7 @@ function App() {
         
         
       </div>
+      
       <div className="max-w-5xl mx-auto" style={{fontFamily: 'Open Sans, sans-serif',fontSize:"30px",marginTop:"25px"}}>
         {nhDistInKm.length === 0?"":<div><p>Total Distance of NH to be constructed: <i style={{color:'#6c584c'}}>{`${nhDistInKm.reduce((acc,el)=>acc+=el,0).toFixed(3)}`} km</i></p></div>}
         {shDistInKm.length === 0?"":<div><p>Total Distance of SH to be constructed: <i style={{color:'#6c584c'}}>{`${shDistInKm.reduce((acc,el)=>acc+=el,0).toFixed(3)}`} km</i></p></div>}
@@ -141,30 +144,42 @@ function App() {
       <div className="max-w-5xl mx-auto" style={{fontFamily: 'Open Sans, sans-serif',fontSize:"30px",marginTop:"25px"}}>
         {nhAreaInM.length !== 0 || shAreaInM.length!==0 || rrAreaInM.length!==0?<div><p>Total Emission from Trees Cut:<i style={{color:'#6c584c'}}> {`${(((nhAreaInM.reduce((acc,el)=>acc+=el,0)+shAreaInM.reduce((acc,el)=>acc+=el,0), rrAreaInM.reduce((acc,el)=>acc+=el,0))/1000000).toFixed(3))*121,405.8}`} tCO<sub>2</sub></i></p> </div>:""}
       </div>
-      
-      <div style={{display:"flex",justifyContent:"space-around"}}>
-          <div className="flex justify-center" style={{fontFamily: 'Open Sans, sans-serif',marginTop:"25px"}}>
-              {nhDistInKm.length === 0?"":<PieChart chartData={road_material[0].Carbon_emission} name="% of Materials Used in Construction of NH" type="volume"/>}
-              {shDistInKm.length === 0?"":<PieChart chartData={road_material[1].Carbon_emission} name="% of Materials Used in Construction of SH" type="volume"/>}
-              {rrDistInKm.length === 0?"":<PieChart chartData={road_material[2].Carbon_emission} name="% of Materials Used in Construction of RR" type="volume"/>}
+      <div className="max-w-5xl mx-auto" style={{fontFamily: 'Open Sans, sans-serif',fontSize:"24px",marginTop:"25px"}}>
+        {nhDistInKm.length === 0 || shDistInKm ===0 || rrDistInKm ===0?"":
+        <div className='flex'>
+          <p className='mr-2'>Choose Road Type:</p>
+          <select name="road" onChange={handleRoadChange} value={roadt}>
+            <option value="Rigid">Rigid</option>
+            <option value="Flexible">Flexible</option>
+            <option value="GeoPolymer">GeoPolymer</option>
+            <option value="Waste Plastic">Waste Plastic</option>
+          </select>
+        </div>}
+      </div>
+      <div>
+          <div className="flex justify-center" style={{fontFamily: 'Open Sans, sans-serif'}}>
+              {nhDistInKm.length === 0?"":<PieChart chartData={road_template[0].types.find((it)=>it.rtype === roadt).rmaterials} name="% of Materials Used in Construction of NH" type="volume"/>}
+              {nhDistInKm.length === 0?"":<PieChart chartData={road_template[0].types.find((it)=>it.rtype === roadt).rmaterials} name="% of CO2 Emission by Materials Used in Construction of NH" type="emission"/>}
+              
           </div>
-          <div className="flex justify-center" style={{fontFamily: 'Open Sans, sans-serif',marginTop:"25px"}}>
-              {nhDistInKm.length === 0?"":<PieChart chartData={road_material[0].Carbon_emission} name="% of CO2 Emission by Materials Used in Construction of NH" type="emission"/>}
-              {shDistInKm.length === 0?"":<PieChart chartData={road_material[1].Carbon_emission} name="% of CO2 Emission by Materials Used in Construction of SH" type="emission"/>}
-              {rrDistInKm.length === 0?"":<PieChart chartData={road_material[2].Carbon_emission} name="% of CO2 Emission by Materials Used in Construction of RR" type="emission"/>}
+          <div className="flex justify-center" style={{fontFamily: 'Open Sans, sans-serif'}}>
+              {shDistInKm.length === 0?"":<PieChart chartData={road_template[1].types.find((it)=>it.rtype === roadt).rmaterials} name="% of Materials Used in Construction of SH" type="volume"/>}
+              {shDistInKm.length === 0?"":<PieChart chartData={road_template[1].types.find((it)=>it.rtype === roadt).rmaterials} name="% of CO2 Emission by Materials Used in Construction of SH" type="emission"/>}
+              
+          </div>
+          <div className="flex justify-center" style={{fontFamily: 'Open Sans, sans-serif'}}>
+              {rrDistInKm.length === 0?"":<PieChart chartData={road_template[2].types.find((it)=>it.rtype === roadt).rmaterials} name="% of Materials Used in Construction of RR" type="volume"/>}
+              {rrDistInKm.length === 0?"":<PieChart chartData={road_template[2].types.find((it)=>it.rtype === roadt).rmaterials} name="% of CO2 Emission by Materials Used in Construction of RR" type="emission"/>}
           </div>
       </div>
       
       <div className="tabularDetails" >
-          {nhDistInKm.length===0 ?"":<TabularData tableData={road_material[0].Carbon_emission} multiplier={nhDistInKm.reduce((acc,el)=>acc+=el,0)} name="Construction of NH Details:"/>}
-          {shDistInKm.length===0 ?"":<TabularData tableData={road_material[1].Carbon_emission} multiplier={shDistInKm.reduce((acc,el)=>acc+=el,0)} name="Construction of SH Details:"/>}
-          {rrDistInKm.length===0 ?"":<TabularData tableData={road_material[2].Carbon_emission} multiplier={rrDistInKm.reduce((acc,el)=>acc+=el,0)} name="Construction of RR Details:"/>}
+          {nhDistInKm.length===0 ?"":<TabularData tableData={road_template[0].types.find((it)=>it.rtype === roadt).rmaterials} multiplier={nhDistInKm.reduce((acc,el)=>acc+=el,0)} name="Construction of NH Details:"/>}
+          {shDistInKm.length===0 ?"":<TabularData tableData={road_template[1].types.find((it)=>it.rtype === roadt).rmaterials} multiplier={shDistInKm.reduce((acc,el)=>acc+=el,0)} name="Construction of SH Details:"/>}
+          {rrDistInKm.length===0 ?"":<TabularData tableData={road_template[2].types.find((it)=>it.rtype === roadt).rmaterials} multiplier={rrDistInKm.reduce((acc,el)=>acc+=el,0)} name="Construction of RR Details:"/>}
       </div>
-
-      <div style={{textAlign:"center",paddingTop:"20px"}}>
-        <p style={{fontSize:"35px",fontFamily:"fantasy"}}>Monitor Air Quality Index(AQI)</p>
-        <div className="aqiButton">
-        {nhDistInKm.length === 0?"":<button style={{color:"#fefae0",background:"#606c38",borderRadius:"19px",padding:"8px 29px",marginTop:"25px"}} className="py-2 px-4 text-sm font-medium text-gray-900 hover:bg-gray-900 hover:text-black focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white" onClick={handlePredictSubmit}>
+      {/*<div className="aqiButton">
+        {nhDistInKm.length === 0?"":<button style={{textAlign:"center",color:"#fefae0",background:"#606c38",borderRadius:"19px",padding:"8px 29px"}} className="py-2 px-4 text-sm font-medium text-gray-900 hover:bg-gray-900 hover:text-black focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white" onClick={handlePredictSubmit}>
             Find AQI trend 
           </button>}
       </div>
@@ -182,7 +197,7 @@ function App() {
                 </div>
             :
                   <LineChart chartAffectedData = {affectedData} chartOriginalData={originalData}/>}
-      </div>
+          </div>*/}
     </>
   );
 }

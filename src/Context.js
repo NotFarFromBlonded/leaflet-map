@@ -23,6 +23,7 @@ const Context = ({children}) => {
     const[originalData, setOriginalData] = useState([]);
     const[loading, setLoading] = useState(false);
     const[submitting, setSubmitting] = useState(false);
+    const[roadt, setRoadt] = useState("Rigid");
     
 
     const distance = (lat1, lon1, lat2, lon2) => {
@@ -33,6 +34,10 @@ const Context = ({children}) => {
                 (1 - c((lon2 - lon1) * p))/2;
       
         return 12742 * Math.asin(Math.sqrt(a)); 
+    }
+
+    const handleRoadChange =(e)=>{
+        setRoadt(e.target.value);
     }
 
 
@@ -175,7 +180,9 @@ const Context = ({children}) => {
             setrrDistInKm,
             handlePredictSubmit,
             affectedData,
-            originalData
+            originalData,
+            roadt,
+            handleRoadChange
         }}>
             {children}
         </Emission.Provider>
